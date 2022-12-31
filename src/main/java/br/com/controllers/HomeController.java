@@ -11,12 +11,17 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import br.com.model.Feedback;
 import br.com.model.Moeda;
 import br.com.model.Propriedades;
+import br.com.util.SendEmailCotacao;
 
 @RestController
 @RequestMapping("/home")
 public class HomeController {
+	
+	@Autowired
+	SendEmailCotacao sendEmail;
 	
 	@Autowired
 	public Propriedades prop;
@@ -25,11 +30,15 @@ public class HomeController {
 	RestTemplate restTemplate;
 	
 	@GetMapping
-	public Moeda teste(@RequestParam("moeda") String moeda) throws JsonMappingException, JsonProcessingException {
+	public Moeda teste(@RequestParam("moeda") String moeda, @RequestParam("emailPara") String emailPara) throws JsonMappingException, JsonProcessingException {
+	
+		Moeda m = getCurrency(moeda);
 		
-	 Moeda getCurrency = getCurrency(moeda);
-
-	 return getCurrency;
+		Feedback feed = new Feedback();
+		feed.setEmail("marcelomscode@gmail.com");
+		sendEmail.sendEmail(m,feed, emailPara);
+		
+	 return m;
 		
 	}
 	
@@ -39,6 +48,9 @@ public class HomeController {
 	  
 	  return entity.getBody();
 	}
+	
+	
+	
 	
 	
 	
